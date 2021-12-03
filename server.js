@@ -6,7 +6,7 @@ var db = require("./database.js");
 // Require md5 MODULE
 var md5 = require("md5"); 
 // Make Express use its own built-in body parser
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
 
 
 app.use(express.urlencoded({ extended: true }));
@@ -47,7 +47,7 @@ app.get("/app/users/", (req, res) => {
 app.get("/app/users/:id", (req, res) => {	
 	const id = req.params.id;
 	const stmt = db.prepare(`SELECT * FROM userinfo WHERE id = ${id}`).all();
-	res.status(201).json(stmt[0]);
+	res.status(200).json(stmt[0]);
 }); 
 
 // UPDATE a single user (HTTP method PATCH) at endpoint /app/update/user/:id
