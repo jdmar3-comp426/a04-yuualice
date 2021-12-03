@@ -2,7 +2,7 @@
 var express = require("express")
 var app = express()
 // Require database SCRIPT file
-var db = require("/Users/alice/Downloads/comp426/a04-yuualice/database.js"); 
+var db = require("/database.js"); 
 // Require md5 MODULE
 var md5 = require(md5); 
 // Make Express use its own built-in body parser
