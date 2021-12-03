@@ -32,18 +32,6 @@ app.get("/app/", (req, res, next) => {
 
 // CREATE a new user (HTTP method POST) at endpoint /app/new/
 app.post("/app/new/", (req, res) => {	
-
-	var errors = []
-    if (!req.body.pass) {
-        errors.push("password not specified");
-    }
-    if (!req.body.user) {
-        errors.push("user not specified");
-    }
-    if (errors.length) {
-        res.status(400).json({"error" : errors.join(",")});
-        return;
-	}
 	const stmt = db.prepare("INSERT INTO userinfo (user, pass) VALUES (?, ?))");
 	const info = stmt.run(req.body.user, md5(req.body.pass)); 
 	res.status(201).json({"message":info.changes+" record created: ID "+info.lastInsertRowid+ " (201)"});
@@ -57,7 +45,8 @@ app.get("/app/users/", (req, res) => {
 
 // READ a single user (HTTP method GET) at endpoint /app/user/:id
 app.get("/app/users/:id", (req, res) => {	
-	const stmt = db.prepare("SELECT * FROM userinfo WHERE id = ?").get(req.params.id);
+	const id = req.params.id;
+	const stmt = db.prepare('SELECT * FROM userinfo WHERE id = ${id}').all();
 	res.status(201).json(stmt[0]);
 }); 
 
@@ -77,6 +66,6 @@ app.delete("/app/delete/user/:id", (req, res) => {
 
 // Default response for any other request
 app.use(function(req, res){
-	res.json({"message":"Endpoint not found. (404)"});
+	// res.json({"message":"Endpoint not found. (404)"});
     res.status(404);
 });
