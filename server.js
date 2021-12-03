@@ -44,10 +44,10 @@ app.get("/app/users/", (req, res) => {
 });
 
 // READ a single user (HTTP method GET) at endpoint /app/user/:id
-app.get("/app/users/:id", (req, res) => {	
-	const id = req.params.id;
-	const stmt = db.prepare(`SELECT * FROM userinfo WHERE id = ${id}`).all();
-	res.status(200).json(stmt[0]);
+app.get("/app/user/:id", (req, res) => {	
+	const stmt = db.prepare("SELECT * FROM userinfo WHERE id = ?");
+	const info = stmt.get(req.params.id);
+	res.status(200).json(info);
 }); 
 
 // UPDATE a single user (HTTP method PATCH) at endpoint /app/update/user/:id
@@ -66,6 +66,6 @@ app.delete("/app/delete/user/:id", (req, res) => {
 
 // Default response for any other request
 app.use(function(req, res){
-	// res.json({"message":"Endpoint not found. (404)"});
+		res.json({"message":"Endpoint not found. (404)"});
     res.status(404);
 });
