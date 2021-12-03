@@ -4,7 +4,7 @@ var app = express()
 // Require database SCRIPT file
 var db = require("./database.js"); 
 // Require md5 MODULE
-var md5 = require(md5); 
+var md5 = require("md5"); 
 // Make Express use its own built-in body parser
 const bodyParser = require("body-parser");
 
@@ -12,7 +12,6 @@ const bodyParser = require("body-parser");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use(bodyParser());
 
 // Set server port
 var HTTP_PORT = 5000;
@@ -32,7 +31,7 @@ app.get("/app/", (req, res, next) => {
 
 
 // CREATE a new user (HTTP method POST) at endpoint /app/new/
-app.post("/app/new", (req, res) => {	
+app.post("/app/new/", (req, res) => {	
 
 	var errors = []
     if (!req.body.pass) {
@@ -46,12 +45,12 @@ app.post("/app/new", (req, res) => {
         return;
 	}
 	const stmt = db.prepare("INSERT INTO userinfo (user, pass) VALUES (?, ?))");
-	const info = stmt.run(req.body.user, req.body.pass); 
+	const info = stmt.run(req.body.user, md5(req.body.pass)); 
 	res.status(201).json({"message":info.changes+" record created: ID "+info.lastInsertRowid+ " (201)"});
 });
 
 // READ a list of all users (HTTP method GET) at endpoint /app/users/
-app.get("/app/users", (req, res) => {	
+app.get("/app/users/", (req, res) => {	
 	const stmt = db.prepare("SELECT * FROM userinfo").all();
 	res.status(201).json(stmt);
 });
@@ -59,13 +58,13 @@ app.get("/app/users", (req, res) => {
 // READ a single user (HTTP method GET) at endpoint /app/user/:id
 app.get("/app/users/:id", (req, res) => {	
 	const stmt = db.prepare("SELECT * FROM userinfo WHERE id = ?").get(req.params.id);
-	res.status(201).json(stmt);
+	res.status(201).json(stmt[0]);
 }); 
 
 // UPDATE a single user (HTTP method PATCH) at endpoint /app/update/user/:id
 app.patch("/app/user/:id", (req, res) => {	
 	const stmt = db.prepare("UPDATE userinfo SET user = COALESCE(?,user), pass = COALESCE(?,pass) WHERE id = ?");
-	const info = stmt.run(req.body.user, req.body.pass, req.params.id);
+	const info = stmt.run(req.body.user, md5(req.body.pass), req.params.id);
 	res.status(200).json({"message" : info.changes+ " record updated: ID " +req.params.id + " (200)"});
 });
 
