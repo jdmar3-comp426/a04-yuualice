@@ -32,7 +32,7 @@ app.get("/app/", (req, res, next) => {
 
 // CREATE a new user (HTTP method POST) at endpoint /app/new/
 app.post("/app/new/", (req, res) => {	
-	const stmt = db.prepare("INSERT INTO userinfo (user, pass) VALUES (?, ?))");
+	const stmt = db.prepare("INSERT INTO userinfo (user, pass) VALUES (?, ?)");
 	const info = stmt.run(req.body.user, md5(req.body.pass)); 
 	res.status(201).json({"message":info.changes+" record created: ID "+info.lastInsertRowid+ " (201)"});
 });
@@ -59,7 +59,7 @@ app.patch("/app/user/:id", (req, res) => {
 
 // DELETE a single user (HTTP method DELETE) at endpoint /app/delete/user/:id
 app.delete("/app/delete/user/:id", (req, res) => {
-	const stmt = db.prepare("DELETE FROM usertable WHERE group_id = ?");
+	const stmt = db.prepare("DELETE FROM userinfo WHERE group_id = ?");
 	const info = stmt.run(req.body.id);
 	res.status(200).json({"message" : info.changes+ " record deleted: ID " +req.params.id + " (200)"});
 });
