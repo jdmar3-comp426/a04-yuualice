@@ -29,23 +29,20 @@ app.get("/app/", (req, res, next) => {
 
 
 // CREATE a new user (HTTP method POST) at endpoint /app/new/
-app.post("/app/new", (req, res) => {	
-	var user = req.body.user;
-	var pass = req.body.pass;
+app.post("/app/new/", (req, res) => {	
 	const stmt = db.prepare("INSERT INTO userinfo (user, pass) VALUES (?, ?))");
-	const info = stmt.run(user, pass); 
+	const info = stmt.run(req.body.user, req.body.pass); 
 	res.status(201).json({"message":info.changes+" record created: ID "+info.lastInsertRowid+ " (201)"});
 });
 
 // READ a list of all users (HTTP method GET) at endpoint /app/users/
-app.get("/app/users", (req, res) => {	
+app.get("/app/users/", (req, res) => {	
 	const stmt = db.prepare("SELECT * FROM userinfo").all();
 	res.status(201).json(stmt);
 });
 
 // READ a single user (HTTP method GET) at endpoint /app/user/:id
-app.get("/app/users/:id", (req, res) => {
-	var id = req.body.id; 	
+app.get("/app/users/:id", (req, res) => {	
 	const stmt = db.prepare("SELECT * FROM userinfo WHERE id = ?").get(req.params.id);
 	res.status(201).json(stmt);
 }); 
@@ -59,9 +56,8 @@ app.get("/app/user/:id", (req, res) => {
 
 // DELETE a single user (HTTP method DELETE) at endpoint /app/delete/user/:id
 app.delete("/app/delete/user/:id", (req, res) => {
-	var id = req.params.id; 
 	const stmt = db.prepare("DELETE FROM usertable WHERE group_id = ?");
-	const info = stmt.run(id);
+	const info = stmt.run(req.body.id);
 	res.status(200).json({"message" : info.changes+ " record deleted: ID " +req.params.id + " (200)"});
 });
 
